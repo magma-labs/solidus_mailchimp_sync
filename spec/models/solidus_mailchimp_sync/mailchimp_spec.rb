@@ -35,5 +35,16 @@ RSpec.describe SolidusMailchimpSync::Mailchimp, type: :model do
         expect{subject.class.request(:get, '/ecommerce/stores', body: '', return_errors: false)}.to raise_error(ArgumentError, 'Missing required configuration `SolidusMailchimpSync.api_key`')
       end
     end
+
+    context 'response generates error' do
+      it ".request raise error" do
+        response = double()
+        allow(response).to receive(:body).and_return('{}') 
+        allow(response).to receive(:code).and_return('Error 400') 
+        allow(HTTP).to receive(:basic_auth).with(anything).and_return(HTTP) 
+        allow(HTTP).to receive(:request).with(any_args).and_return(response) 
+        expect{subject.class.request(:get, '/ecommerce/stores', body: '', return_errors: false)}.to raise_error('Error 400')
+      end
+    end
   end
 end

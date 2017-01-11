@@ -11,9 +11,7 @@ module SolidusMailchimpSync
     def self.request(method, path, body: nil, return_errors: false)
       return unless SolidusMailchimpSync.enabled
 
-      if SolidusMailchimpSync.api_key.blank?
-        raise ArgumentError, "Missing required configuration `SolidusMailchimpSync.api_key`"
-      end
+      self.api_key_is_blank?
 
       url = url(path)
       args = [method.to_sym, url]
@@ -63,6 +61,12 @@ module SolidusMailchimpSync
 
     def self.url(path)
       base_url + path.sub(%r{\A/}, '')
+    end
+
+    private
+
+    def self.api_key_is_blank?
+        raise ArgumentError, "Missing required configuration `SolidusMailchimpSync.api_key`" if SolidusMailchimpSync.api_key.blank?
     end
 
   end
