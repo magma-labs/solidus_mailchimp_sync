@@ -9,7 +9,7 @@ begin
 
   RSpec::Core::RakeTask.new(:spec)
 
-  RuboCop::RakeTask.new
+#  RuboCop::RakeTask.new
 
   #task default: %i(first_run rubocop spec)
   task default: %i(first_run spec)
