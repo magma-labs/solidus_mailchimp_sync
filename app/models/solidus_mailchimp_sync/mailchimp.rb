@@ -22,19 +22,7 @@ module SolidusMailchimpSync
       response_hash = response.body.present? ? JSON.parse(response.body.to_s) : { status: response.code }
 
       unless (200..299).cover?(response.code)
-        return Error.new(
-          request_method: method,
-          request_url: url,
-          request_body: body,
-
-          type: response_hash["type"],
-          title: response_hash["title"],
-          status: response_hash["status"] || response.code,
-          detail: response_hash["detail"],
-          instance: response_hash["instance"],
-
-          response_hash: response_hash
-        ).tap { |error| raise error unless return_errors }
+        return self.create_error_response(method, url, body, response, response_hash, return_errors)
       end
 
       response_hash
@@ -67,6 +55,21 @@ module SolidusMailchimpSync
 
     def self.api_key_is_blank?
         raise ArgumentError, "Missing required configuration `SolidusMailchimpSync.api_key`" if SolidusMailchimpSync.api_key.blank?
+    end
+
+    def self.create_error_response(method, url, body, response, response_hash, return_errors)
+      Error.new(
+        request_method: method,
+        request_url: url,
+        request_body: body,
+
+        type: response_hash["type"],
+        title: response_hash["title"],
+        status: response_hash["status"] || response.code,
+        detail: response_hash["detail"],
+        instance: response_hash["instance"],
+        response_hash: response_hash
+      ).tap { |error| raise error unless return_errors }
     end
 
   end
